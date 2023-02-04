@@ -26,3 +26,12 @@ samples, guidance on mobile development, and a full API reference.
 - Auto saving
 - Collaborative Editing in Rich Text Editor
 - Sign Out
+
+### Google Authentication
+
+To create a Google Authentication, you need to create a new project in the [Google Developer Console](https://console.developers.google.com/). Then, you need to create a new OAuth Consent Screen and add the following scopes:
+
+- `./auth/userinfo.email`
+- `./auth/userinfo.profile`
+
+Then, you need to create a new OAuth Client ID. You will create 3 OAuth Client IDs: Web, Android and iOS. To complete the integration, follow the instructions in the [Google Sign In Flutter Plugin](https://pub.dev/packages/google_sign_in).

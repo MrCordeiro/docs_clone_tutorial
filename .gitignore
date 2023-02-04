@@ -15,6 +15,7 @@ migrate_working_dir/
 
 # Secrets
 .env
+key*.json
 
 # IntelliJ related
 *.iml

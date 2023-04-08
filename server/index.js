@@ -1,6 +1,7 @@
-import cors from "cors";
-import express, { json } from "express";
-import { connect } from "mongoose";
+const cors = require("cors");
+const express = require("express");
+const mongoose = require("mongoose");
+const authRouter = require("./routes/auth");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 3001;
@@ -12,12 +13,12 @@ const app = express();
 // Allows cross-origin requests
 app.use(cors());
 // Parses incoming JSON requests and puts the parsed data in req.body
-app.use(json());
+app.use(express.json());
 // Routes
 app.use(authRouter);
 
 // Connections
-connect(DB)
+mongoose.connect(DB)
 	.then(() => console.log("Connected to MongoDB"))
 	.catch((err) => console.log(err));
 

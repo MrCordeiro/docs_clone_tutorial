@@ -1,10 +1,12 @@
 import 'package:docs_clone_tutorial/models/error.dart';
 import 'package:docs_clone_tutorial/repository/auth_repository.dart';
+import 'package:docs_clone_tutorial/router.dart';
 import 'package:docs_clone_tutorial/screens/home.dart';
 import 'package:docs_clone_tutorial/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:routemaster/routemaster.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
@@ -40,11 +42,18 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userProvider);
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Docs Clone',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: user == null ? const LoginScreen(): const HomeScreen(),
+      debugShowCheckedModeBanner: false,
+      routerDelegate: RoutemasterDelegate(routesBuilder: (context) {
+        final user = ref.watch(userProvider);
+        if(user!=null && user.token.isNotEmpty) {
+          return loggedInRoute;
+        }
+        return loggedOutRoute;
+      }),
+      routeInformationParser: const RoutemasterParser(),
     );
   }
 }

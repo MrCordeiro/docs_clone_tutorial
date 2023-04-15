@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:docs_clone_tutorial/constants.dart';
 import 'package:docs_clone_tutorial/models/error.dart';
 import 'package:docs_clone_tutorial/models/user.dart';
+import 'package:docs_clone_tutorial/repository/local_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Provider support
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
@@ -12,6 +13,7 @@ import 'package:http/http.dart';
 final authRepositoryProvider = Provider((ref) => AuthRepository(
       googleSignIn: GoogleSignIn(),
       client: Client(),
+      localStorageRepository: LocalStorageRepository(),
     ));
 
 // Read-write access to a shared User state
@@ -20,10 +22,15 @@ final userProvider = StateProvider<UserModel?>((ref) => null);
 class AuthRepository {
   final GoogleSignIn _googleSignIn;
   final Client _client;
+  final LocalStorageRepository _localStorageRepository;
 
-  AuthRepository({required GoogleSignIn googleSignIn, required Client client})
+  AuthRepository(
+      {required GoogleSignIn googleSignIn,
+      required Client client,
+      required LocalStorageRepository localStorageRepository})
       : _googleSignIn = googleSignIn,
-        _client = client;
+        _client = client,
+        _localStorageRepository = localStorageRepository;
 
   Future<ErrorModel> signInWithGoogle() async {
     ErrorModel error = ErrorModel(
@@ -31,26 +38,27 @@ class AuthRepository {
       data: null,
     );
     try {
-      final user = await _googleSignIn.signIn();
-      if (user != null) {
-        final userAcc = UserModel(
-            email: user.email,
-            name: user.displayName ?? "",
-            profilePic: user.photoUrl ?? "",
+      final userData = await _googleSignIn.signIn();
+      if (userData != null) {
+        final user = UserModel(
+            email: userData.email,
+            name: userData.displayName ?? "",
+            profilePic: userData.photoUrl ?? "",
             uid: "",
             token: "");
 
         var res = await _client.post(Uri.parse('$host/api/signup'),
-            body: userAcc.toJson(),
+            body: user.toJson(),
             headers: {
               'Content-Type': 'application/json; charset=UTF-8',
             });
 
         switch (res.statusCode) {
           case 200:
-            userAcc.uid = jsonDecode(res.body)["user"]["_id"];
-            userAcc.token = jsonDecode(res.body)["token"];
-            error = ErrorModel(error: null, data: userAcc);
+            user.uid = jsonDecode(res.body)["user"]["_id"];
+            user.token = jsonDecode(res.body)["token"];
+            error = ErrorModel(error: null, data: user);
+            _localStorageRepository.setToken(user.token);
             break;
           default:
             log("Error");
@@ -61,4 +69,37 @@ class AuthRepository {
     }
     return error;
   }
+
+  Future<ErrorModel> getUserData() async {
+    ErrorModel error = ErrorModel(
+      error: 'Some unexpected error occurred.',
+      data: null,
+    );
+    try {
+      String? token = await _localStorageRepository.getToken();
+      if (token != null) {
+        var res = await _client.get(Uri.parse('$host/'),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'x-auth-token': token,
+          });
+
+        switch (res.statusCode) {
+          case 200:
+            UserModel user = UserModel.fromJson(
+              jsonEncode(jsonDecode(res.body)["user"])
+            ).copyWith(token: token);
+            error = ErrorModel(error: null, data: user);
+            _localStorageRepository.setToken(user.token);
+            break;
+          default:
+            log("Error");
+        }
+      }
+    } catch (e) {
+      error = ErrorModel(error: e.toString(), data: null);
+    }
+    return error;
+  }
+
 }

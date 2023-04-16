@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:docs_clone_tutorial/constants.dart';
 import 'package:docs_clone_tutorial/models/error.dart';
 import 'package:docs_clone_tutorial/models/user.dart';
-import 'package:docs_clone_tutorial/repository/local_storage.dart';
+import 'package:docs_clone_tutorial/services/local_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Provider support
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
@@ -38,7 +38,7 @@ class AuthRepository {
       data: null,
     );
     try {
-      final userData = await _googleSignIn.signIn();
+      final userData = await _googleSignIn.signInSilently();
       if (userData != null) {
         final user = UserModel(
             email: userData.email,

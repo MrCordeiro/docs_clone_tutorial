@@ -1,6 +1,5 @@
 import 'package:docs_clone_tutorial/colors.dart';
-import 'package:docs_clone_tutorial/repository/auth_repository.dart';
-import 'package:docs_clone_tutorial/screens/home.dart';
+import 'package:docs_clone_tutorial/services/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:routemaster/routemaster.dart';

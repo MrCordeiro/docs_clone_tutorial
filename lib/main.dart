@@ -1,8 +1,6 @@
 import 'package:docs_clone_tutorial/models/error.dart';
-import 'package:docs_clone_tutorial/repository/auth_repository.dart';
+import 'package:docs_clone_tutorial/services/auth_repository.dart';
 import 'package:docs_clone_tutorial/router.dart';
-import 'package:docs_clone_tutorial/screens/home.dart';
-import 'package:docs_clone_tutorial/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,7 +46,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       debugShowCheckedModeBanner: false,
       routerDelegate: RoutemasterDelegate(routesBuilder: (context) {
         final user = ref.watch(userProvider);
-        if(user!=null && user.token.isNotEmpty) {
+        if (user != null && user.token.isNotEmpty) {
           return loggedInRoute;
         }
         return loggedOutRoute;

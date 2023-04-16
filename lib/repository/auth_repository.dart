@@ -47,11 +47,10 @@ class AuthRepository {
             uid: "",
             token: "");
 
-        var res = await _client.post(Uri.parse('$host/api/signup'),
-            body: user.toJson(),
-            headers: {
-              'Content-Type': 'application/json; charset=UTF-8',
-            });
+        var res = await _client
+            .post(Uri.parse('$host/api/signup'), body: user.toJson(), headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        });
 
         switch (res.statusCode) {
           case 200:
@@ -78,17 +77,16 @@ class AuthRepository {
     try {
       String? token = await _localStorageRepository.getToken();
       if (token != null) {
-        var res = await _client.get(Uri.parse('$host/'),
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            'x-auth-token': token,
-          });
+        var res = await _client.get(Uri.parse('$host/'), headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': token,
+        });
 
         switch (res.statusCode) {
           case 200:
-            UserModel user = UserModel.fromJson(
-              jsonEncode(jsonDecode(res.body)["user"])
-            ).copyWith(token: token);
+            UserModel user =
+                UserModel.fromJson(jsonEncode(jsonDecode(res.body)["user"]))
+                    .copyWith(token: token);
             error = ErrorModel(error: null, data: user);
             _localStorageRepository.setToken(user.token);
             break;
@@ -102,4 +100,8 @@ class AuthRepository {
     return error;
   }
 
+  void signOut() async {
+    await _googleSignIn.signOut();
+    _localStorageRepository.setToken('');
+  }
 }

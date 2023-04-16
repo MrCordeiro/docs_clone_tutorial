@@ -6,6 +6,12 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
+  void _signOut(WidgetRef ref) {
+    ref.read(authRepositoryProvider).signOut();
+    // Clear data from provider
+    ref.read(userProvider.notifier).update((state) => null);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
@@ -16,7 +22,7 @@ class HomeScreen extends ConsumerWidget {
             icon: const Icon(Icons.add, color: kBlackColor),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () => _signOut(ref),
             icon: const Icon(Icons.logout, color: kRedColor),
           ),
         ],

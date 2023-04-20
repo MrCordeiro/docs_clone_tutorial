@@ -1,6 +1,9 @@
 import "package:docs_clone_tutorial/colors.dart";
+import "package:docs_clone_tutorial/models/document.dart";
+import "package:docs_clone_tutorial/models/error.dart";
 import 'package:docs_clone_tutorial/services/auth_repository.dart';
 import "package:docs_clone_tutorial/services/document.dart";
+import "package:docs_clone_tutorial/widgets/loader.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:routemaster/routemaster.dart";
@@ -32,6 +35,10 @@ class HomeScreen extends ConsumerWidget {
     }
   }
 
+  void navigateToDocument(BuildContext context, String id) {
+    Routemaster.of(context).push('/document/$id');
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
@@ -49,6 +56,39 @@ class HomeScreen extends ConsumerWidget {
           backgroundColor: kWhiteColor,
           elevation: 0,
         ),
-        body: Center(child: Text(ref.watch(userProvider)!.email)));
+        body: FutureBuilder<ErrorModel>(
+          future: ref
+              .watch(documentRepositoryProvider)
+              .getDocuments(ref.watch(userProvider)!.token),
+          builder: ((context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Loader();
+            }
+            return Center(
+              child: Container(
+                margin: const EdgeInsets.only(top: 10),
+                width: 600,
+                child: ListView.builder(
+                  itemCount: snapshot.data!.data.length,
+                  itemBuilder: ((context, index) {
+                    DocumentModel document = snapshot.data!.data[index];
+                    return InkWell(
+                      onTap: () => navigateToDocument(context, document.id),
+                      child: SizedBox(
+                        height: 50,
+                        child: Card(
+                            child: Center(
+                                child: Text(
+                          document.title,
+                          style: const TextStyle(fontSize: 17),
+                        ))),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            );
+          }),
+        ));
   }
 }

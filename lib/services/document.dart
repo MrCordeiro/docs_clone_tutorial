@@ -72,8 +72,7 @@ class DocumentServices {
         case 200:
           List<DocumentModel> documents = [];
           for (var doc in jsonDecode(res.body)) {
-
-            documents.add(DocumentModel.fromJson(jsonEncode(doc)));
+            documents.add(DocumentModel.fromMap(doc));
           }
           error = ErrorModel(
             error: null,
@@ -95,4 +94,55 @@ class DocumentServices {
     }
     return error;
   }
+
+  void updateTitle({
+    required String token,
+    required String id,
+    required String title,
+  }) async {
+    await _client.post(
+      Uri.parse('$host/docs/title'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'x-auth-token': token,
+      },
+      body: jsonEncode({
+        'id': id,
+        'title': title,
+      }),
+    );
+  }
+
+  Future<ErrorModel> getDocument(String token, String id) async {
+    ErrorModel error = ErrorModel(
+      error: 'Some unexpected error occurred.',
+      data: null,
+    );
+    try {
+      var res = await _client.get(
+        Uri.parse('$host/docs/$id'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': token,
+        },
+      );
+      switch (res.statusCode) {
+        case 200:
+          error = ErrorModel(
+            error: null,
+            data: DocumentModel.fromJson(res.body),
+          );
+          break;
+        default:
+          throw "This document doesn't exist.";
+      }
+    } catch (e) {
+      error = ErrorModel(
+        error: e.toString(),
+        data: null,
+      );
+    }
+    return error;
+  }
+
 }

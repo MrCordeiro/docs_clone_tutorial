@@ -1,4 +1,8 @@
 import 'package:docs_clone_tutorial/colors.dart';
+import 'package:docs_clone_tutorial/models/document.dart';
+import 'package:docs_clone_tutorial/models/error.dart';
+import 'package:docs_clone_tutorial/services/auth_repository.dart';
+import 'package:docs_clone_tutorial/services/document.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +22,34 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   final TextEditingController _titleController =
       TextEditingController(text: "Untitled Document");
   final quill.QuillController _controller = quill.QuillController.basic();
+  ErrorModel? _document;
+
+  void updateTitle(WidgetRef ref, String title) {
+    ref.read(documentRepositoryProvider).updateTitle(
+          token: ref.read(userProvider)!.token,
+          id: widget.id,
+          title: title,
+        );
+  }
+
+  void fetchDocumentData() async {
+    String token = ref.read(userProvider)!.token;
+    _document = await ref.read(documentRepositoryProvider).getDocument(
+          token,
+          widget.id,
+        );
+
+    if (_document!.data != null) {
+      _titleController.text = (_document!.data! as DocumentModel).title;
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDocumentData();
+  }
 
   @override
   void dispose() {
@@ -46,7 +78,8 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
                         focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: blueColor)),
                         contentPadding: EdgeInsets.only(left: 10),
-                      )),
+                      ),
+                      onSubmitted: (value) => updateTitle(ref, value)),
                 )
               ],
             ),
@@ -81,7 +114,8 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
               const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: quill.QuillToolbar.basic(controller: _controller, multiRowsDisplay: false),
+                child: quill.QuillToolbar.basic(
+                    controller: _controller, multiRowsDisplay: false),
               ),
               const SizedBox(height: 10),
               Expanded(

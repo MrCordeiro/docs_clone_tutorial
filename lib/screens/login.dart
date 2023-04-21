@@ -35,9 +35,9 @@ class LoginScreen extends ConsumerWidget {
         onPressed: () => _signInWithGoogle(ref, context),
         icon: Image.asset('assets/images/g-logo.png', height: 20.0),
         label: const Text('Sign in with Google',
-            style: TextStyle(color: kBlackColor)),
+            style: TextStyle(color: blackColor)),
         style: ElevatedButton.styleFrom(
-            backgroundColor: kWhiteColor, minimumSize: const Size(150, 50)),
+            backgroundColor: whiteColor, minimumSize: const Size(150, 50)),
       ),
     ));
   }

@@ -46,14 +46,14 @@ class HomeScreen extends ConsumerWidget {
           actions: [
             IconButton(
               onPressed: () => _createDocument(context, ref),
-              icon: const Icon(Icons.add, color: kBlackColor),
+              icon: const Icon(Icons.add, color: blackColor),
             ),
             IconButton(
               onPressed: () => _signOut(ref),
-              icon: const Icon(Icons.logout, color: kRedColor),
+              icon: const Icon(Icons.logout, color: redColor),
             ),
           ],
-          backgroundColor: kWhiteColor,
+          backgroundColor: whiteColor,
           elevation: 0,
         ),
         body: FutureBuilder<ErrorModel>(

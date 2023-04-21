@@ -1,6 +1,6 @@
-# docs_clone_tutorial
+# Google Docs Clone
 
-A new Flutter project.
+Personal docs editor with Google Authentication, Rich Text Editor, and Realtime Collaboration.
 
 ## Getting Started
 
@@ -34,4 +34,6 @@ To create a Google Authentication, you need to create a new project in the [Goog
 - `./auth/userinfo.email`
 - `./auth/userinfo.profile`
 
-Then, you need to create a new OAuth Client ID. You will create 3 OAuth Client IDs: Web, Android and iOS. To complete the integration, follow the instructions in the [Google Sign In Flutter Plugin](https://pub.dev/packages/google_sign_in).
+After that, create a new OAuth Client ID. You will create 3 OAuth Client IDs: Web, Android and iOS. To complete the integration, follow the instructions in the [Google Sign In Flutter Plugin](https://pub.dev/packages/google_sign_in).
+
+Finally, you must enable the People API in the [Google Developer Console](https://console.cloud.google.com/apis/library/people.googleapis.com).

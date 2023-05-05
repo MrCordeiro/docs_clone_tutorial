@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:docs_clone_tutorial/colors.dart';
 import 'package:docs_clone_tutorial/models/document.dart';
 import 'package:docs_clone_tutorial/models/error.dart';
@@ -81,6 +83,14 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
             quill.ChangeSource.REMOTE,
           )
         });
+
+    // Autosave document every 2 seconds
+    Timer.periodic(const Duration(seconds: 2), (timer) {
+      _socketServices.autoSave(<String, dynamic>{
+        'delta': _controller!.document.toDelta(),
+        'room': widget.id,
+      });
+    });
   }
 
   @override

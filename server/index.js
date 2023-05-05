@@ -5,6 +5,7 @@ const socket = require("socket.io");
 const mongoose = require("mongoose");
 const authRouter = require("./routes/auth");
 const documentRouter = require("./routes/document");
+const Document = require("./models/document");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 3001;
@@ -49,6 +50,7 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("save", (data) => {
+		console.log("Saving document");
     saveData(data);
   });
 
